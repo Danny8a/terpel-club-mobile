@@ -1,0 +1,22 @@
+#!/bin/bash
+# Script para ejecutar pruebas con diferentes opciones
+
+echo "=========================================="
+echo "  TerpelClub - Test Runner"
+echo "=========================================="
+echo ""
+echo "Opciones disponibles:"
+echo "  1) Ejecutar todas las pruebas"
+echo "  2) Ejecutar pruebas en modo watch"
+echo "  3) Ver cobertura de código"
+echo "  4) Ejecutar pruebas específicas"
+echo "  5) Listar archivos de prueba"
+echo ""
+echo "Uso directo:"
+echo "  npm test                           # Todas las pruebas"
+echo "  npm test -- --watch                # Modo watch"
+echo "  npm test -- --coverage             # Ver cobertura"
+echo "  npm test -- --testNamePattern=auth # Pruebas específicas"
+echo "  npm test -- --verbose              # Modo verbose"
+echo ""
+echo "=========================================="

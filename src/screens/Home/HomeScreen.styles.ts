@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native';
-import {COLORS} from '../config/colors';
+import {COLORS} from '../../config/colors';
 
 export const styles = StyleSheet.create({
   container: {
@@ -59,7 +59,7 @@ export const styles = StyleSheet.create({
   pointsCard: {
     backgroundColor: COLORS.primary,
     marginHorizontal: 20,
-    marginTop: -30,
+    marginTop: 16,
     padding: 20,
     borderRadius: 12,
     shadowColor: '#000',

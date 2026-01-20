@@ -1,16 +1,20 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  ScrollView,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
-import {COLORS} from '../config/colors';
+import {View, Text, ScrollView, TouchableOpacity, Image} from 'react-native';
+import {useDispatch, useSelector} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+
 import {styles} from './HomeScreen.styles';
+import {logout} from '../../store/slices/authSlice';
+import type {RootState} from '../../store/store';
 
 const HomeScreen: React.FC = () => {
-  // Datos mock para demostración
+  const dispatch = useDispatch();
+  const navigation = useNavigation<any>();
+
+  // Si luego conectas con API, aquí reemplazas por data real.
+  // Por ahora, user mock + (opcional) mostrar doc guardado en redux.
+  const auth = useSelector((state: RootState) => state.auth);
+
   const user = {
     nombre: 'Juan Pérez',
     puntos: 5420,
@@ -47,22 +51,31 @@ const HomeScreen: React.FC = () => {
     },
   ];
 
+  const onLogout = () => dispatch(logout());
+
+  const goToMovements = () => {
+    // Esto cambia a la tab "Movements" (según tu AppTabs)
+    navigation.navigate('Movements');
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>
-              {user.nombre[0].toUpperCase()}
-            </Text>
+            <Text style={styles.avatarText}>{user.nombre[0].toUpperCase()}</Text>
           </View>
           <View>
             <Text style={styles.headerTitle}>Terpel Club</Text>
-            <Text style={styles.headerSubtitle}>{user.nombre}</Text>
+            <Text style={styles.headerSubtitle}>
+              {user.nombre}
+              {auth.documentNumber ? ` • ${auth.documentType} ${auth.documentNumber}` : ''}
+            </Text>
           </View>
         </View>
-        <TouchableOpacity style={styles.logoutButton}>
+
+        <TouchableOpacity style={styles.logoutButton} onPress={onLogout}>
           <Text style={styles.logoutText}>Salir</Text>
         </TouchableOpacity>
       </View>
@@ -72,13 +85,16 @@ const HomeScreen: React.FC = () => {
         <View style={styles.pointsCard}>
           <View style={styles.pointsHeader}>
             <Text style={styles.pointsLabel}>Puntos Disponibles</Text>
-            <TouchableOpacity style={styles.historyButton}>
+
+            <TouchableOpacity style={styles.historyButton} onPress={goToMovements}>
               <Text style={styles.historyButtonText}>Ver Historial →</Text>
             </TouchableOpacity>
           </View>
+
           <Text style={styles.pointsValue}>
             {user.puntos.toLocaleString('es-CO')}
           </Text>
+
           <Text style={styles.pointsEquivalent}>
             ≈ ${user.puntos.toLocaleString('es-CO')} COP
           </Text>
@@ -90,15 +106,10 @@ const HomeScreen: React.FC = () => {
 
           {products.map(product => (
             <View key={product.id} style={styles.productCard}>
-              <Image
-                source={{uri: product.imagen}}
-                style={styles.productImage}
-              />
+              <Image source={{uri: product.imagen}} style={styles.productImage} />
               <View style={styles.productInfo}>
                 <Text style={styles.productName}>{product.nombre}</Text>
-                <Text style={styles.productDescription}>
-                  {product.descripcion}
-                </Text>
+                <Text style={styles.productDescription}>{product.descripcion}</Text>
                 <Text style={styles.productPrice}>
                   ${product.precio.toLocaleString('es-CO')}
                 </Text>

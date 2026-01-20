@@ -7,15 +7,34 @@ import {
   SafeAreaView,
   StatusBar,
 } from 'react-native';
-import {COLORS} from '../config/colors';
+import {useDispatch} from 'react-redux';
+
+import {COLORS} from '../../config/colors';
 import {styles} from './LoginScreen.styles';
-import type {DocumentType} from '../types/auth.types';
+import type {DocumentType} from '../../types/auth.types';
+import {login} from '../../store/slices/authSlice';
 
 const LoginScreen: React.FC = () => {
+  const dispatch = useDispatch();
+
   const [documentType, setDocumentType] = useState<DocumentType>('CC');
   const [documentNumber, setDocumentNumber] = useState<string>('');
 
   const documentTypes: DocumentType[] = ['CC', 'CE', 'PA'];
+
+  const canSubmit = documentNumber.trim().length >= 5;
+
+  const onLogin = () => {
+    const doc = documentNumber.trim();
+    if (!doc) return;
+
+    dispatch(
+      login({
+        documentType,
+        documentNumber: doc,
+      }),
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -65,10 +84,14 @@ const LoginScreen: React.FC = () => {
           placeholderTextColor={COLORS.gray}
           keyboardType="number-pad"
           returnKeyType="done"
+          onSubmitEditing={onLogin}
         />
 
         {/* Botón Ingresar */}
-        <TouchableOpacity style={styles.button}>
+        <TouchableOpacity
+          style={[styles.button, !canSubmit && {opacity: 0.6}]}
+          onPress={onLogin}
+          disabled={!canSubmit}>
           <Text style={styles.buttonText}>Ingresar</Text>
         </TouchableOpacity>
 

@@ -1,79 +1,119 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# 📱 Terpel Club App – Prueba Técnica Frontend
 
-# Getting Started
+Aplicación móvil desarrollada como parte de la **prueba técnica Frontend** para el proceso de **Desarrollador Especializado – Terpel**.
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+La app simula funcionalidades del programa **Terpel Club**, incluyendo autenticación, consulta de puntos, catálogo, movimientos y pagos, utilizando **React Native** y datos **mock**.
 
-## Step 1: Start the Metro Server
+---
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
+## 🧱 Stack tecnológico
 
-To start Metro, run the following command from the _root_ of your React Native project:
+- React Native 0.76
+- TypeScript
+- React Navigation (Stack + Bottom Tabs)
+- Hooks (useState, useEffect, useMemo)
+- StyleSheet
+- Datos mock en memoria
 
-```bash
-# using npm
-npm start
+---
 
-# OR using Yarn
-yarn start
-```
+## 🚀 Instalación y ejecución
 
-## Step 2: Start your Application
+### Requisitos
+- Node.js ≥ 18
+- Android Studio (emulador configurado)
+- JDK configurado correctamente
 
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
-
-### For Android
-
-```bash
-# using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### For iOS
+### Pasos
 
 ```bash
-# using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+npm install
+npx react-native run-android
 ```
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+> Nota: durante el desarrollo se presentaron inconsistencias temporales con los servicios QA, por lo que la app funciona completamente con **datos mock**.
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+---
 
-## Step 3: Modifying your App
+## 📂 Estructura del proyecto
 
-Now that you have successfully run the app, let's modify it.
+```
+src/
+├── assets/
+├── config/
+│   └── colors.ts
+├── mocks/
+│   ├── catalog.mock.ts
+│   └── movements.mock.ts
+├── navigation/
+│   ├── AppTabs.tsx
+│   └── RootNavigator.tsx
+├── screens/
+│   ├── LoginScreen.tsx
+│   ├── HomeScreen.tsx
+│   ├── CatalogScreen.tsx
+│   ├── MovementsScreen.tsx
+│   ├── PaymentsScreen.tsx
+│   └── *.styles.ts
+└── types/
+```
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+- Separación de lógica y estilos
+- Mocks desacoplados de las pantallas
+- Navegación centralizada
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+---
 
-## Congratulations! :tada:
+## 🧭 Flujo de la aplicación
 
-You've successfully run and modified your React Native App. :partying_face:
+1. Login
+   - Selección de tipo de documento
+   - Ingreso de número de documento
+   - Validación básica
+2. Home
+   - Información del usuario
+   - Puntos disponibles
+   - Acceso al historial de movimientos
+3. Catálogo
+   - Lista de productos y servicios
+   - Buscador local en tiempo real
+4. Movimientos
+   - Historial de movimientos del usuario
+   - Paginación de 4 registros por página
+5. Pagos
+   - Selección de método de pago (Tarjeta / PSE)
+   - Validaciones de monto y referencia
+   - Confirmación de pago simulada
+6. Salir
+   - Cierre de sesión
+   - Retorno al Login
 
-### Now what?
+---
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
+## 🧪 Datos mock y servicios
 
-# Troubleshooting
+Debido a la indisponibilidad temporal de los servicios durante el desarrollo, se implementaron **datos mock locales** que simulan:
 
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+- Catálogo de productos
+- Movimientos del usuario
+- Flujo de pagos
 
-# Learn More
+La arquitectura permite reemplazar fácilmente los mocks por servicios reales.
 
-To learn more about React Native, take a look at the following resources:
+---
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+## ✅ Buenas prácticas aplicadas
+
+- Componentes funcionales
+- Separación de responsabilidades
+- Manejo de estados UI (empty, error, success)
+- Código legible y mantenible
+- Diseño sobrio alineado a una app corporativa
+
+---
+
+## 📌 Consideraciones finales
+
+La aplicación fue desarrollada priorizando claridad del flujo, experiencia de usuario y facilidad de mantenimiento, cumpliendo con los requerimientos funcionales de la prueba técnica.
+
+Quedo atento a cualquier ajuste o ampliación que se requiera.
