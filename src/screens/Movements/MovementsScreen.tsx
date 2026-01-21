@@ -1,42 +1,73 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {View, Text, FlatList, TouchableOpacity} from 'react-native';
-
-import {getMovementsMock, Movement} from '../../mocks/movements.mock';
+import {View, Text, TouchableOpacity, FlatList} from 'react-native';
 import {styles} from './MovementsScreen.styles';
+
+import {fetchMovements, type Movement} from '../../api/terpelApi';
+import type {ApiError} from '../../api/http';
 
 const PAGE_SIZE = 4;
 
-export default function MovementsScreen() {
-  const [page, setPage] = useState(1);
+const MovementsScreen: React.FC = () => {
   const [items, setItems] = useState<Movement[]>([]);
-  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<ApiError | null>(null);
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
-    const res = getMovementsMock(page, PAGE_SIZE);
-    setItems(res.items);
-    setTotal(res.total);
-  }, [page]);
+    let alive = true;
+    (async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const data = await fetchMovements();
+        if (alive) {
+          setItems(data);
+          setPage(1);
+        }
+      } catch (e: any) {
+        if (alive) setError(e);
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
 
-  const totalPages = useMemo(
-    () => Math.max(1, Math.ceil(total / PAGE_SIZE)),
-    [total],
-  );
+    return () => {
+      alive = false;
+    };
+  }, []);
 
-  const canPrev = page > 1;
-  const canNext = page < totalPages;
+  const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil(items.length / PAGE_SIZE));
+  }, [items.length]);
+
+  const pageItems = useMemo(() => {
+    const start = (page - 1) * PAGE_SIZE;
+    return items.slice(start, start + PAGE_SIZE);
+  }, [items, page]);
 
   const renderItem = ({item}: {item: Movement}) => {
-    const pointsStyle =
-      item.points >= 0 ? styles.pointsPositive : styles.pointsNegative;
+    const sign = item.puntos > 0 ? '+' : '';
+    const puntosText = `${sign}${item.puntos.toLocaleString('es-CO')} pts`;
 
     return (
-      <View style={styles.card}>
-        <Text style={styles.date}>{item.date}</Text>
-        <Text style={styles.description}>{item.description}</Text>
-        <Text style={pointsStyle}>
-          {item.points >= 0 ? '+' : ''}
-          {item.points} pts
-        </Text>
+      <View style={styles.movementCard}>
+        <View style={styles.movementRow}>
+          <Text style={styles.movementTitle}>{item.descripcion}</Text>
+          <Text
+            style={[
+              styles.movementPoints,
+              item.puntos < 0 ? styles.negative : styles.positive,
+            ]}>
+            {puntosText}
+          </Text>
+        </View>
+
+        <View style={styles.movementMetaRow}>
+          <Text style={styles.movementMeta}>
+            {item.fecha}{item.hora ? ` • ${item.hora}` : ''}
+          </Text>
+          {item.tipo ? <Text style={styles.movementMeta}>{item.tipo}</Text> : null}
+        </View>
       </View>
     );
   };
@@ -45,42 +76,46 @@ export default function MovementsScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Movimientos</Text>
 
-      <FlatList
-        data={items}
-        keyExtractor={i => i.id.toString()}
-        renderItem={renderItem}
-      />
-
-      {/* Paginación */}
-      <View style={styles.pagination}>
-        <TouchableOpacity
-          disabled={!canPrev}
-          onPress={() => setPage(p => Math.max(1, p - 1))}
-          style={[
-            styles.paginationButton,
-            canPrev
-              ? styles.paginationButtonEnabled
-              : styles.paginationButtonDisabled,
-          ]}>
-          <Text style={styles.paginationButtonText}>Anterior</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.paginationText}>
-          Página {page} de {totalPages}
+      {error ? (
+        <Text style={styles.error}>
+          {error.message} {error.status ? `(HTTP ${error.status})` : ''}
         </Text>
+      ) : null}
 
-        <TouchableOpacity
-          disabled={!canNext}
-          onPress={() => setPage(p => Math.min(totalPages, p + 1))}
-          style={[
-            styles.paginationButton,
-            canNext
-              ? styles.paginationButtonEnabled
-              : styles.paginationButtonDisabled,
-          ]}>
-          <Text style={styles.paginationButtonText}>Siguiente</Text>
-        </TouchableOpacity>
-      </View>
+      {loading ? (
+        <Text style={styles.loading}>Cargando...</Text>
+      ) : (
+        <>
+          <FlatList
+            data={pageItems}
+            keyExtractor={(it) => it.id}
+            renderItem={renderItem}
+            contentContainerStyle={{paddingBottom: 12}}
+          />
+
+          <View style={styles.pagination}>
+            <TouchableOpacity
+              style={[styles.pageBtn, page <= 1 && styles.pageBtnDisabled]}
+              disabled={page <= 1}
+              onPress={() => setPage((p) => Math.max(1, p - 1))}>
+              <Text style={styles.pageBtnText}>Anterior</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.pageInfo}>
+              {page} / {totalPages}
+            </Text>
+
+            <TouchableOpacity
+              style={[styles.pageBtn, page >= totalPages && styles.pageBtnDisabled]}
+              disabled={page >= totalPages}
+              onPress={() => setPage((p) => Math.min(totalPages, p + 1))}>
+              <Text style={styles.pageBtnText}>Siguiente</Text>
+            </TouchableOpacity>
+          </View>
+        </>
+      )}
     </View>
   );
-}
+};
+
+export default MovementsScreen;

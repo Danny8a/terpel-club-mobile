@@ -109,7 +109,7 @@ export default function PaymentsScreen() {
           ) : (
             <View style={styles.successBox}>
               <Text style={styles.successText}>
-                Pago simulado exitoso ✅
+                Pago simulado exitoso 
               </Text>
               <Text style={{marginTop: 6, color: '#1B7F3A'}}>
                 Método: {method} {'\n'}

@@ -1,5 +1,5 @@
-import {StyleSheet} from 'react-native';
-import {COLORS} from '../../config/colors';
+import { StyleSheet } from 'react-native';
+import { COLORS } from '../../config/colors';
 
 export const styles = StyleSheet.create({
   container: {
@@ -42,6 +42,13 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     color: COLORS.white,
     opacity: 0.9,
+    marginBottom: 4,
+  },
+  headerDocument: {
+    fontSize: 12,
+    color: COLORS.white,
+    opacity: 0.8,
+    fontWeight: '500',
   },
   logoutButton: {
     backgroundColor: 'rgba(255,255,255,0.2)',
@@ -63,7 +70,7 @@ export const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 12,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 8,
     elevation: 8,
@@ -105,11 +112,42 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: 20,
   },
+  catalogHeaderRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  seeAllButton: {
+    backgroundColor: 'rgba(0,0,0,0.06)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  seeAllButtonText: {
+    color: COLORS.black,
+    fontSize: 12,
+    fontWeight: '700',
+  },
+
+  refreshButton: {
+    backgroundColor: 'rgba(0,0,0,0.08)',
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  emptyText: {
+    color: COLORS.gray,
+    textAlign: 'center',
+    marginTop: 8,
+  },
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: COLORS.black,
-    marginBottom: 16,
   },
   productCard: {
     backgroundColor: COLORS.white,
@@ -117,7 +155,7 @@ export const styles = StyleSheet.create({
     marginBottom: 16,
     overflow: 'hidden',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
@@ -146,5 +184,11 @@ export const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     color: COLORS.primary,
+  },
+  outOfStock: {
+    marginTop: 6,
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#B00020',
   },
 });

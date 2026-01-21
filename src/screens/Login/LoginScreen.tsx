@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import {
   View,
   Text,
@@ -14,24 +14,40 @@ import {styles} from './LoginScreen.styles';
 import type {DocumentType} from '../../types/auth.types';
 import {login} from '../../store/slices/authSlice';
 
+const DOC_MAP: Record<string, string> = {
+  '1030627891': 'HfEmh0dDdtpw9yKetdnZ7Q%3D%3D',
+};
+
 const LoginScreen: React.FC = () => {
   const dispatch = useDispatch();
 
   const [documentType, setDocumentType] = useState<DocumentType>('CC');
   const [documentNumber, setDocumentNumber] = useState<string>('');
+  const [formError, setFormError] = useState<string>('');
 
   const documentTypes: DocumentType[] = ['CC', 'CE', 'PA'];
 
-  const canSubmit = documentNumber.trim().length >= 5;
+  const docTrimmed = useMemo(() => documentNumber.trim(), [documentNumber]);
+  const canSubmit = docTrimmed.length >= 5;
 
   const onLogin = () => {
-    const doc = documentNumber.trim();
+    const doc = docTrimmed;
     if (!doc) return;
+
+    const encoded = DOC_MAP[doc];
+
+    if (!encoded) {
+      setFormError('Documento no habilitado en QA. Usa 1030627891.');
+      return;
+    }
+
+    setFormError('');
 
     dispatch(
       login({
         documentType,
         documentNumber: doc,
+        documentEncoded: encoded
       }),
     );
   };
@@ -79,13 +95,22 @@ const LoginScreen: React.FC = () => {
         <TextInput
           style={styles.input}
           value={documentNumber}
-          onChangeText={setDocumentNumber}
+          onChangeText={(v) => {
+            setDocumentNumber(v);
+            if (formError) setFormError('');
+          }}
           placeholder="Ingrese su documento"
           placeholderTextColor={COLORS.gray}
           keyboardType="number-pad"
           returnKeyType="done"
           onSubmitEditing={onLogin}
         />
+
+        {!!formError && (
+          <Text style={{color: '#FFD6D6', marginTop: -14, marginBottom: 16}}>
+            {formError}
+          </Text>
+        )}
 
         {/* Botón Ingresar */}
         <TouchableOpacity

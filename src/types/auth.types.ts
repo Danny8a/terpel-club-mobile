@@ -1,6 +1,8 @@
 export type DocumentType = 'CC' | 'CE' | 'PA';
 
-export interface LoginFormData {
-  documentType: DocumentType;
-  documentNumber: string;
-}
+export type AuthState = {
+  isAuthenticated: boolean;
+  documentType: DocumentType | null;
+  documentNumber: string | null;
+  documentEncoded?: string | null;
+};

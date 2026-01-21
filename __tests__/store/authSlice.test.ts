@@ -9,6 +9,7 @@ describe('authSlice', () => {
       isLoggedIn: false,
       documentType: 'CC',
       documentNumber: '',
+      documentEncoded: '',
     });
   });
 
@@ -63,6 +64,7 @@ describe('authSlice', () => {
       expect(state).toHaveProperty('isLoggedIn');
       expect(state).toHaveProperty('documentType');
       expect(state).toHaveProperty('documentNumber');
+      expect(state).toHaveProperty('documentEncoded');
     });
   });
 
@@ -84,6 +86,7 @@ describe('authSlice', () => {
         isLoggedIn: true,
         documentType: 'CE' as DocumentType,
         documentNumber: '9876543',
+        documentEncoded: 'encoded123',
       };
 
       const state = authReducer(initialState, logout());
@@ -91,6 +94,7 @@ describe('authSlice', () => {
       expect(state.isLoggedIn).toBe(false);
       expect(state.documentType).toBe('CC');
       expect(state.documentNumber).toBe('');
+      expect(state.documentEncoded).toBe('');
     });
 
     it('should work on already logged out state', () => {

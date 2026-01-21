@@ -1,62 +1,114 @@
-import React from 'react';
-import {View, Text, ScrollView, TouchableOpacity, Image} from 'react-native';
-import {useDispatch, useSelector} from 'react-redux';
-import {useNavigation} from '@react-navigation/native';
+import React, { useEffect, useMemo, useState } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, Image, FlatList } from 'react-native';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import {styles} from './HomeScreen.styles';
-import {logout} from '../../store/slices/authSlice';
-import type {RootState} from '../../store/store';
+import { styles } from './HomeScreen.styles';
+import { logout } from '../../store/slices/authSlice';
+import type { RootState } from '../../store/store';
+
+import { fetchClientInfo, type ClientInfo, fetchCatalog, type CatalogProduct } from '../../api/terpelApi';
+import type { ApiError } from '../../api/http';
+
+const HOME_CATALOG_LIMIT = 4;
+
+function shuffleArray<T>(array: T[]): T[] {
+  const copy = [...array];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
+  }
+  return copy;
+}
 
 const HomeScreen: React.FC = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation<any>();
 
-  // Si luego conectas con API, aquí reemplazas por data real.
-  // Por ahora, user mock + (opcional) mostrar doc guardado en redux.
   const auth = useSelector((state: RootState) => state.auth);
 
-  const user = {
-    nombre: 'Juan Pérez',
-    puntos: 5420,
-  };
+  const [client, setClient] = useState<ClientInfo | null>(null);
+  const [catalog, setCatalog] = useState<CatalogProduct[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<ApiError | null>(null);
 
-  const products = [
-    {
-      id: 1,
-      nombre: 'Gasolina Corriente',
-      descripcion: 'Combustible de alta calidad para tu vehículo',
-      precio: 12000,
-      imagen: 'https://via.placeholder.com/300x200/D32F2F/FFFFFF?text=Gasolina',
-    },
-    {
-      id: 2,
-      nombre: 'Gasolina Extra',
-      descripcion: 'Mayor octanaje para mejor rendimiento',
-      precio: 14000,
-      imagen: 'https://via.placeholder.com/300x200/B71C1C/FFFFFF?text=Extra',
-    },
-    {
-      id: 3,
-      nombre: 'ACPM',
-      descripcion: 'Combustible diésel de excelente calidad',
-      precio: 11000,
-      imagen: 'https://via.placeholder.com/300x200/C62828/FFFFFF?text=ACPM',
-    },
-    {
-      id: 4,
-      nombre: 'Lubricante',
-      descripcion: 'Aceite de motor sintético premium',
-      precio: 45000,
-      imagen: 'https://via.placeholder.com/300x200/E53935/FFFFFF?text=Aceite',
-    },
-  ];
+  const [shuffleSeed, setShuffleSeed] = useState(0);
 
   const onLogout = () => dispatch(logout());
 
-  const goToMovements = () => {
-    // Esto cambia a la tab "Movements" (según tu AppTabs)
-    navigation.navigate('Movements');
+  const goToMovements = () => navigation.navigate('Movements');
+  const goToCatalog = () => navigation.navigate('Catalog'); // <-- ajusta si tu ruta se llama distinto
+
+  const refreshProducts = () => {
+    setShuffleSeed((s) => s + 1);
   };
+
+  useEffect(() => {
+    let alive = true;
+
+    (async () => {
+      try {
+        setLoading(true);
+        setError(null);
+
+        const [info, cat] = await Promise.all([
+          fetchClientInfo(),
+          fetchCatalog(),
+        ]);
+
+        if (!alive) return;
+
+        setClient(info);
+        setCatalog(cat);
+      } catch (e: any) {
+        if (alive) setError(e);
+      } finally {
+        if (alive) setLoading(false);
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  const displayName = useMemo(() => {
+    if (loading) return 'Cargando...';
+    if (error) return 'Error al cargar';
+    return client?.nombreCompleto || 'Sin nombre';
+  }, [loading, error, client]);
+
+  const avatarLetter = useMemo(() => {
+    return (displayName?.[0] || 'T').toUpperCase();
+  }, [displayName]);
+
+  const puntos = client?.puntosDisponibles ?? 0;
+
+  const homeCatalog = useMemo(() => {
+    if (!catalog.length) return [];
+    return shuffleArray(catalog).slice(0, HOME_CATALOG_LIMIT);
+  }, [catalog, shuffleSeed]);
+
+  const renderProduct = ({ item }: { item: CatalogProduct }) => (
+    <View style={styles.productCard}>
+      <Image
+        source={{ uri: item.imagen || 'https://via.placeholder.com/300x200?text=Sin+Imagen' }}
+        style={styles.productImage}
+      />
+      <View style={styles.productInfo}>
+        <Text style={styles.productName}>{item.nombre}</Text>
+        <Text style={styles.productDescription}>{item.descripcion}</Text>
+        <Text style={styles.productPrice}>
+          {item.puntos.toLocaleString('es-CO')} pts
+        </Text>
+
+        {!item.disponible ? (
+          <Text style={styles.outOfStock}>Agotado</Text>
+        ) : null}
+      </View>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
@@ -64,14 +116,24 @@ const HomeScreen: React.FC = () => {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <View style={styles.avatar}>
-            <Text style={styles.avatarText}>{user.nombre[0].toUpperCase()}</Text>
+            <Text style={styles.avatarText}>{avatarLetter}</Text>
           </View>
           <View>
             <Text style={styles.headerTitle}>Terpel Club</Text>
             <Text style={styles.headerSubtitle}>
-              {user.nombre}
-              {auth.documentNumber ? ` • ${auth.documentType} ${auth.documentNumber}` : ''}
+              {displayName}
             </Text>
+            {auth.documentNumber && (
+              <Text style={styles.headerDocument}>
+                {auth.documentType} {auth.documentNumber}
+              </Text>
+            )}
+
+            {error ? (
+              <Text style={{ marginTop: 6, color: '#fff', opacity: 0.9 }}>
+                {error.message} {error.status ? `(HTTP ${error.status})` : ''}
+              </Text>
+            ) : null}
           </View>
         </View>
 
@@ -92,30 +154,52 @@ const HomeScreen: React.FC = () => {
           </View>
 
           <Text style={styles.pointsValue}>
-            {user.puntos.toLocaleString('es-CO')}
+            {puntos.toLocaleString('es-CO')}
           </Text>
 
           <Text style={styles.pointsEquivalent}>
-            ≈ ${user.puntos.toLocaleString('es-CO')} COP
+            ≈ ${puntos.toLocaleString('es-CO')} COP
           </Text>
         </View>
 
-        {/* Catalog */}
+        {/* Catalog Preview */}
         <View style={styles.catalogContainer}>
-          <Text style={styles.sectionTitle}>Catálogo de Productos</Text>
+          <View style={styles.catalogHeaderRow}>
+            <Text style={styles.sectionTitle}>Catálogo de Productos</Text>
 
-          {products.map(product => (
-            <View key={product.id} style={styles.productCard}>
-              <Image source={{uri: product.imagen}} style={styles.productImage} />
-              <View style={styles.productInfo}>
-                <Text style={styles.productName}>{product.nombre}</Text>
-                <Text style={styles.productDescription}>{product.descripcion}</Text>
-                <Text style={styles.productPrice}>
-                  ${product.precio.toLocaleString('es-CO')}
-                </Text>
-              </View>
+            <View style={{ flexDirection: 'row', gap: 8 }}>
+              <TouchableOpacity
+                style={styles.refreshButton}
+                onPress={refreshProducts}
+                accessibilityLabel="Actualizar productos"
+              >
+                <MaterialCommunityIcons 
+                  name="refresh" 
+                  size={20} 
+                  color="#000000" 
+                />
+              </TouchableOpacity>
+
+
+              <TouchableOpacity style={styles.seeAllButton} onPress={goToCatalog}>
+                <Text style={styles.seeAllButtonText}>Ver todo →</Text>
+              </TouchableOpacity>
             </View>
-          ))}
+          </View>
+
+          <FlatList
+            data={homeCatalog}
+            keyExtractor={(item) => item.id}
+            renderItem={renderProduct}
+            scrollEnabled={false}
+            ListEmptyComponent={
+              loading ? (
+                <Text style={styles.emptyText}>Cargando catálogo...</Text>
+              ) : (
+                <Text style={styles.emptyText}>No hay productos.</Text>
+              )
+            }
+          />
         </View>
       </ScrollView>
     </View>
