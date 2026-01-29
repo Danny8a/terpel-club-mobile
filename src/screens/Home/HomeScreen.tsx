@@ -156,10 +156,6 @@ const HomeScreen: React.FC = () => {
           <Text style={styles.pointsValue}>
             {puntos.toLocaleString('es-CO')}
           </Text>
-
-          <Text style={styles.pointsEquivalent}>
-            ≈ ${puntos.toLocaleString('es-CO')} COP
-          </Text>
         </View>
 
         {/* Catalog Preview */}
