@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, Image, FlatList } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, Image, FlatList, ActivityIndicator } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { styles } from './HomeScreen.styles';
+import { COLORS } from '../../config/colors';
 import { logout } from '../../store/slices/authSlice';
 import type { RootState } from '../../store/store';
 
@@ -109,6 +110,14 @@ const HomeScreen: React.FC = () => {
       </View>
     </View>
   );
+
+  if (loading) {
+    return (
+      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+        <ActivityIndicator size="large" color={COLORS.primary} />
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
