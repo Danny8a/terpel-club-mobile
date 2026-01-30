@@ -3,7 +3,7 @@ import {View, Text, TextInput, FlatList, Image, ActivityIndicator} from 'react-n
 
 import {styles} from './CatalogScreen.styles';
 import {fetchCatalog, type CatalogProduct} from '../../api/terpelApi';
-import type {ApiError} from '../../api/http';
+import type {ApiError} from '../../types/api';
 
 export default function CatalogScreen() {
   const [query, setQuery] = useState('');

@@ -1,11 +1,5 @@
 import {useEffect, useState} from 'react';
-import type {ApiError} from '../api/http';
-
-export type UseApiCallState<T> = {
-  data: T | null;
-  loading: boolean;
-  error: ApiError | null;
-};
+import type {UseApiCallState} from '../types/hooks';
 
 export function useApiCall<T>(
   asyncFn: () => Promise<T>,

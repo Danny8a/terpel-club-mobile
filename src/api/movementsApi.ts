@@ -3,7 +3,7 @@ import {TERPEL} from './config';
 import {getAccessToken} from './tokenStore';
 import {store} from '../store/store';
 
-import type {Movement, TransaccionesResponse, ApiError} from './types';
+import type {Movement, TransaccionesResponse, ApiError} from '../types/domain';
 
 function formatDateISOToCO(iso?: string) {
   if (!iso) return '';

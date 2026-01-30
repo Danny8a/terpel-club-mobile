@@ -3,7 +3,7 @@ import {View, Text, TouchableOpacity, FlatList} from 'react-native';
 import {styles} from './MovementsScreen.styles';
 
 import {fetchMovements, type Movement} from '../../api/terpelApi';
-import type {ApiError} from '../../api/http';
+import type {ApiError} from '../../types/api';
 
 const PAGE_SIZE = 4;
 

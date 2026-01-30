@@ -2,7 +2,7 @@ import {http, toApiError} from './http';
 import {TERPEL} from './config';
 import {Base64} from 'js-base64';
 
-import type {CatalogProduct, CatalogResponse} from './types';
+import type {CatalogProduct, CatalogResponse} from '../types/domain';
 
 function basicAuthHeader(user: string, pass: string) {
   const raw = `${user.trim()}:${pass.trim()}`;

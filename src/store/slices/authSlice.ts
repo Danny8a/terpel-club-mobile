@@ -1,13 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-
-export type DocumentType = 'CC' | 'CE' | 'PA';
-
-type AuthState = {
-  isLoggedIn: boolean;
-  documentType: DocumentType;
-  documentNumber: string;
-  documentEncoded: string;
-};
+import type {DocumentType, AuthState} from '../../../types/auth.types';
 
 const initialState: AuthState = {
   isLoggedIn: false,

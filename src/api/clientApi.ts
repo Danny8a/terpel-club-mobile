@@ -3,7 +3,8 @@ import {TERPEL} from './config';
 import {getAccessToken} from './tokenStore';
 import {store} from '../store/store';
 
-import type {ApiError, ClientInfo, Top10Response} from './types';
+import type {ApiError} from '../types/api';
+import type {ClientInfo, Top10Response} from '../types/domain';
 
 function ensureString(v: any) {
   return typeof v === 'string' ? v.trim() : '';

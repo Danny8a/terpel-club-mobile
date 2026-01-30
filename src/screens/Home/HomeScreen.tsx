@@ -9,7 +9,7 @@ import { logout } from '../../store/slices/authSlice';
 import type { RootState } from '../../store/store';
 
 import { fetchClientInfo, type ClientInfo, fetchCatalog, type CatalogProduct } from '../../api/terpelApi';
-import type { ApiError } from '../../api/http';
+import type { ApiError } from '../../types/api';
 
 const HOME_CATALOG_LIMIT = 4;
 

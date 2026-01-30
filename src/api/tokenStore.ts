@@ -1,11 +1,7 @@
 import {http, toApiError} from './http';
 import {TERPEL} from './config';
 import { Base64 } from 'js-base64';
-
-type TokenResponse = {
-  accessToken: string;
-  expiresIn: string;
-};
+import type {TokenResponse} from '../types/api';
 
 let cached: {token: string; expiresAt: number} | null = null;
 
