@@ -37,7 +37,7 @@ const LoginScreen: React.FC = () => {
     const encoded = DOC_MAP[doc];
 
     if (!encoded) {
-      setFormError('Documento no habilitado en QA. Usa 1030627891.');
+      setFormError('Documento no habilitado.');
       return;
     }
 
